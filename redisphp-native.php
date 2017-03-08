@@ -27,8 +27,14 @@ class RedisStorage
 */
 function connect($redisServer = null, $redisPort = null, $errCode = null, $errStr = null)
 {
-    $redisConnect = RedisStorage::$connect = fsockopen($redisServer, $redisPort, $errCode, $errStr);
-    return $redisConnect;
+  //Register shutdown function, which close our connection to redis
+  register_shutdown_function(function()
+  {
+    close();
+  });
+
+  $redisConnect = RedisStorage::$connect = fsockopen($redisServer, $redisPort, $errCode, $errStr);
+  return $redisConnect;
 }
 
 /**
@@ -145,9 +151,3 @@ function close()
   fclose(RedisStorage::$connect);
   return ;
 }
-
-//Register shutdown function, which close our connection to redis
-register_shutdown_function(function()
-{
-    close();
-});
