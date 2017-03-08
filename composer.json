@@ -1,0 +1,13 @@
+{
+    "name": "yatsenkolesh/redisphp-native",
+    "description": "Native php library for redis",
+    "type": "library",
+    "authors": [
+        {
+            "name": "yatsenkolesh",
+            "email": "webfay1@gmail.com"
+        }
+    ],
+    "minimum-stability": "beta",
+    "require": {}
+}
