@@ -1,5 +1,7 @@
 # redisphp-native
 
+This library is analogous of Redis class without OOP.
+
 Get value by key:
 ```php
 Redis\connect('127.0.0.1', 6379);
