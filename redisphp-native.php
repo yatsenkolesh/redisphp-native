@@ -53,6 +53,19 @@ function set($key = null, $value = null, $expiration = null)
 }
 
 /**
+  * @param string $key
+  * @return boolean answer
+*/
+function del($key)
+{
+  return query('DEL',
+  [
+    $key
+  ], 0) == ':1';
+}
+
+
+/**
   * Get redis key
   * @param string $key
   * @return string
@@ -105,7 +118,8 @@ function send($command = null, $sentNum = 0)
   if($sentNum > 0)
     foreach(range(0, ($sentNum-1)) as $num)
     {
-      fgets(RedisStorage::$connect);
+      if(ltrim(trim(fgets(RedisStorage::$connect))) == '$-1')
+        return false;
     }
 
   return ltrim(rtrim(fgets(RedisStorage::$connect)));
