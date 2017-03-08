@@ -1,6 +1,11 @@
 # redisphp-native
 
-This library is analogous of Redis class without OOP.
+This library is analogous of Redis class without OOP. Uses sockets.
+
+####To install with composer:
+```text
+composer require "yatsenkolesh/redisphp-native"
+```
 
 Get value by key:
 ```php
