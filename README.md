@@ -1,6 +1,6 @@
 # redisphp-native
 
-Get value from key:
+Get value by key:
 ```php
 Redis\connect('127.0.0.1', 6379);
 Redis\get('mykey');
@@ -8,12 +8,12 @@ Redis\get('mykey');
 
 After connection to redis this connection will be used for all commands.
 
-Delete key:
+Delete:
 ```php
 Redis\del('mykey');
 ```
 
-Set key:
+Set key value:
 ```php
   Redis\set('mykey', 'HELLO', 360);
 ```
