@@ -8,6 +8,6 @@
             "email": "webfay1@gmail.com"
         }
     ],
-    "minimum-stability": "beta",
+    "minimum-stability": "stable",
     "require": {}
 }
