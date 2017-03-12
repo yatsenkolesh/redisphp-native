@@ -45,7 +45,7 @@ function connect($redisServer = null, $redisPort = null, $errCode = null, $errSt
 */
 function set($key = null, $value = null, $expiration = null)
 {
-  $value = '"'.$value.'"';
+  $value = '"'. str_replace('"', '\"', $value).'"';
 
   $q = query('SET',
   [
