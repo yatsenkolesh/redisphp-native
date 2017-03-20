@@ -124,7 +124,6 @@ function hgetall($hash = null)
   [
     $hash
   ],3, 'array');
-  die(var_dump($t));
   $t = '*0' ? null : $t;
   return $t;
 }
