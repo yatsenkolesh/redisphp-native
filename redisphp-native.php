@@ -47,7 +47,7 @@ function set($key = null, $value = null, $expiration = null)
 {
   $value = '"'. str_replace('"', '\"', $value).'"';
 
-  $q = query('SET',
+  $q = query('set',
   [
     $key,
     $value,
@@ -64,7 +64,7 @@ function set($key = null, $value = null, $expiration = null)
 */
 function del($key)
 {
-  return query('DEL',
+  return query('del',
   [
     $key
   ], 0) == ':1';
@@ -78,11 +78,57 @@ function del($key)
 */
 function get($key = null)
 {
-  return query('GET',
+  return query('get',
   [
     $key
   ],1);
 }
+
+/**
+  * Select a redis db
+  * @param int id
+  * @return boolean
+*/
+function select($id = 0)
+{
+  return query('select',
+  [
+    $id,
+  ], 0);
+}
+
+/**
+  * Set a hash
+  * @param string $hash
+  * @param array $args
+  * @return boolean
+*/
+function hmset($hash = null, $args = [])
+{
+  $commandArgs = [$hash];
+
+  foreach($args as $key => $val)
+    $commandArgs[] = $key. ' '. $val;
+
+  return query('hmset', $commandArgs, 0);
+}
+
+/**
+  * Get a all relations of hash
+  * @param string $hash
+  * @return string
+*/
+function hgetall($hash = null)
+{
+  $t = query('hgetall',
+  [
+    $hash
+  ],3, 'array');
+  die(var_dump($t));
+  $t = '*0' ? null : $t;
+  return $t;
+}
+
 
 /**
   * Format command in redis format
@@ -104,31 +150,49 @@ function command($command = null, $params = [])
   * @param string $command
   * @param array $params
   * @param int $sentNum sent once
+  * @param string $expected string|array
   * @return string
 */
-function query($command = null, $params = [], $sentNum = 0)
+function query($command = null, $params = [], $sentNum = 0, $expected = 'string')
 {
-  return send(command($command, $params),$sentNum);
+  return send(command($command, $params),$sentNum, $expected);
 }
 
 /**
   * Send command to redis server
   * @param string $command
   * @param int $sentNum sent once
+  * @param string $expexted string|array
   * @return string answer
 */
-function send($command = null, $sentNum = 0)
+function send($command = null, $sentNum = 0, $expected = 'string')
 {
   fwrite(RedisStorage::$connect, $command);
 
+  $ret = [];
+
   if($sentNum > 0)
+  {
+    $sentNum = ($expected == 'string' ? $sentNum : $sentNum+1);
+
     foreach(range(0, ($sentNum-1)) as $num)
     {
+      $ret[] = ltrim(trim(fgets(RedisStorage::$connect)));
+
+      //failed to handle request
       if(ltrim(trim(fgets(RedisStorage::$connect))) == '$-1')
         return false;
     }
+  }
 
-  return ltrim(rtrim(fgets(RedisStorage::$connect)));
+  $cb  = (function() use ($ret, $expected)
+  {
+    if($expected != 'array')
+      throw new Exception('Failed to return type of response: '. $expected);
+    return $ret;
+  });
+
+  return $expected == 'string' ? ltrim(rtrim(fgets(RedisStorage::$connect))) : $cb();
 }
 
 /**
@@ -137,7 +201,7 @@ function send($command = null, $sentNum = 0)
 */
 function exists($key = null)
 {
-  return query('EXISTS',
+  return query('exists',
   [
     $key
   ]) == ':1';
