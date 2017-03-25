@@ -114,6 +114,64 @@ function hmset($hash = null, $args = [])
 }
 
 /**
+  * @param string $hash
+  * @return mixed
+*/
+function hget($hash = null)
+{
+  $t = query('hget',
+  [
+    $hash
+  ], 1);
+  return $t == '$-1' ? false : $t;
+}
+
+/**
+  * @param string $hash
+  * @return
+*/
+function hdel($hash = null)
+{
+  return query('hdel',
+  [
+    $hash
+  ]);
+}
+
+/**
+  * Is exits current hash
+  * @param string $hash
+  * @param string $key
+  * @return boolean
+*/
+function hexists($hash = null, $key = null)
+{
+  return query('hexists',
+  [
+    $hash,
+    $key
+  ]) == ':1' ? true : false;
+}
+
+/**
+  * @param string $hash
+  * @param string $key
+  * @param mixed $value
+  * @return true always
+*/
+function hset($hash = null, $key = null, $value = null)
+{
+  return (boolean) query('hset',
+  [
+    $hash,
+    $key,
+    $value
+  ]);
+}
+
+
+
+/**
   * Get a all relations of hash
   * @param string $hash
   * @return string
@@ -129,8 +187,6 @@ function hgetall($hash = null)
   $result = [];
 
   $continue = false;
-
-  // die(var_dump($t));
 
   $continueList = [];
   foreach($t as $k => $tListing)
@@ -163,6 +219,7 @@ function hlen($hash = null)
   ]);
   return str_replace(':', '', $t);
 }
+
 
 
 /**
