@@ -123,9 +123,45 @@ function hgetall($hash = null)
   $t = query('hgetall',
   [
     $hash
-  ],3, 'array');
-  $t = '*0' ? null : $t;
-  return $t;
+  ], (hlen($hash) * 4), 'array');
+  $t = $t == '*0' ? null : $t;
+
+  $result = [];
+
+  $continue = false;
+
+  // die(var_dump($t));
+
+  $continueList = [];
+  foreach($t as $k => $tListing)
+  {
+    if(in_array($tListing[0], ['*', '$']) || in_array($k, $continueList))
+    {
+      continue;
+    }
+
+    if(isset($t[$k+2]))
+    {
+      $result[$tListing] = $t[($k+2)];
+      $continueList [] = $k+2;
+      $continueList [] = $k;
+    }
+  }
+  return $result;
+}
+
+/**
+  * Hash length
+  * @param string $hash
+  * @return int
+*/
+function hlen($hash = null)
+{
+  $t = query('hlen',
+  [
+    $hash
+  ]);
+  return str_replace(':', '', $t);
 }
 
 
@@ -138,10 +174,14 @@ function hgetall($hash = null)
 function command($command = null, $params = [])
 {
   foreach($params as $key => $param)
+  {
     if(is_null($param))
       unset($params[$key]);
+  }
 
-  return $command. " ". join(" ", $params). "\r\n";
+  $command = $command. " ". join(" ", $params). "\r\n";
+
+  return $command;
 }
 
 /**
@@ -176,20 +216,20 @@ function send($command = null, $sentNum = 0, $expected = 'string')
 
     foreach(range(0, ($sentNum-1)) as $num)
     {
-      $ret[] = ltrim(trim(fgets(RedisStorage::$connect)));
+      $ret[] = $t = ltrim(trim(fgets(RedisStorage::$connect)));
 
       //failed to handle request
-      if(ltrim(trim(fgets(RedisStorage::$connect))) == '$-1')
+      if($t == '$-1')
         return false;
     }
   }
 
-  $cb  = (function() use ($ret, $expected)
+  $cb  = function() use ($ret, $expected)
   {
     if($expected != 'array')
       throw new Exception('Failed to return type of response: '. $expected);
     return $ret;
-  });
+  };
 
   return $expected == 'string' ? ltrim(rtrim(fgets(RedisStorage::$connect))) : $cb();
 }
