@@ -11,4 +11,9 @@
     "license": "BSD-3-Clause",
     "minimum-stability": "dev",
     "require": {}
+    "autoload": {
+        "psr-0": {
+            "Redis": ""
+        }
+    }
 }
