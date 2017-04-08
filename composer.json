@@ -12,8 +12,6 @@
     "minimum-stability": "dev",
     "require": {},
     "autoload": {
-        "psr-0": {
-            "Redis": ""
-        }
+       "files": ["vendor/yatsenkolesh/redisphp-native/Redis/Redis.php"]
     }
 }
