@@ -47,6 +47,7 @@ function set($key = null, $value = null, $expiration = null)
 {
   $value = '"'. str_replace('"', '\"', $value).'"';
 
+  $expiration = !empty($expiration) ? 'EX '. $expiration : null;
   $q = query('set',
   [
     $key,
