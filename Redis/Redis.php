@@ -309,6 +309,9 @@ function exists($key = null)
 */
 function close()
 {
+  if(!RedisStorage::$connect) {
+       return ;
+  }
   fclose(RedisStorage::$connect);
   return ;
 }
