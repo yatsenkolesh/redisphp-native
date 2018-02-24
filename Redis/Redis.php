@@ -6,13 +6,10 @@
 */
 namespace Redis;
 
-/**
-  * May be I can use static vars, but i don't know what is work faster
-*/
 class RedisStorage
 {
   /**
-    * @var rosource $connect for save redis connection
+    * @var resource $connect for save redis connection
   */
   public static $connect = false;
 }
@@ -22,11 +19,15 @@ class RedisStorage
   * @param string $redisServer
   * @param int $redisPort
   * @param string $errCode
-  * @param $errStr
-  * @return resource
+  * @param int $errStr
+  * @return resource|null
 */
 function connect($redisServer = null, $redisPort = null, $errCode = null, $errStr = null)
 {
+  if (empty($redisServer)) {
+       return ;
+  }
+ 
   //Register shutdown function, which close our connection to redis
   register_shutdown_function(function()
   {
