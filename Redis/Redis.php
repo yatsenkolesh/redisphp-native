@@ -265,6 +265,10 @@ function query($command = null, $params = [], $sentNum = 0, $expected = 'string'
 */
 function send($command = null, $sentNum = 0, $expected = 'string')
 {
+  if (empty(RedisStorage::$connect)) {
+      return '';
+  }
+  
   fwrite(RedisStorage::$connect, $command);
 
   $ret = [];
